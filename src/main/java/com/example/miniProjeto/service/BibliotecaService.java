@@ -5,8 +5,12 @@ import com.example.miniProjeto.dto.BibliotecaDTO;
 import com.example.miniProjeto.model.Biblioteca;
 import com.example.miniProjeto.repository.BibliotecaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
@@ -14,29 +18,25 @@ import java.util.stream.Collectors;
 
 @Service
 public class BibliotecaService {
-    private final String apiURL = "https://qiiw8bgxka.execute-api.us-east-2.amazonaws.com/acervo/biblioteca";
-    private final WebClient webClient;
 
     @Autowired
     private BibliotecaRepository repository;
 
-    public BibliotecaService() {
-        this.webClient = WebClient.builder().baseUrl(apiURL).build();
-    }
-
     public void getDadosAndSave() {
+        final String apiURL = "https://qiiw8bgxka.execute-api.us-east-2.amazonaws.com/acervo/biblioteca";
         System.out.println("Iniciando sincronizacao de dados Biblioteca");
 
         try {
             repository.deleteAll();
+            RestTemplate restTemplate = new RestTemplate();
 
-            List<Biblioteca> dados =  webClient
-                    .get()
-                    .uri("")
-                    .retrieve()
-                    .bodyToFlux(Biblioteca.class)
-                    .collectList()
-                    .block();
+            ResponseEntity<List<Biblioteca>> getAPI = restTemplate.exchange(
+                    apiURL,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<Biblioteca>>(){});
+
+            List<Biblioteca> dados = getAPI.getBody();
 
             if (dados !=null && !dados.isEmpty()) {
                 repository.saveAll(dados);

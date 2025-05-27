@@ -7,37 +7,38 @@ import com.example.miniProjeto.model.Disciplina;
 import com.example.miniProjeto.repository.DisciplinaRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
 @Service
 public class DisciplinasService {
-    private final String apiURL = "https://sswfuybfs8.execute-api.us-east-2.amazonaws.com/disciplinaServico/msDisciplina";
-    private final WebClient webClient;
 
     @Autowired
     private DisciplinaRepository repository;
 
-    public DisciplinasService() {
-        this.webClient = WebClient.builder().baseUrl(apiURL).build();
-    }
 
     public void getDadosAndSave() {
+        final String apiURL = "https://sswfuybfs8.execute-api.us-east-2.amazonaws.com/disciplinaServico/msDisciplina";
         System.out.println("Iniciando sincronizacao de dados Disciplinas");
 
         try {
             repository.deleteAll();
+            RestTemplate restTemplate = new RestTemplate();
 
-            List<Disciplina> dados =  webClient
-                    .get()
-                    .uri("")
-                    .retrieve()
-                    .bodyToFlux(Disciplina.class)
-                    .collectList()
-                    .block();
+            ResponseEntity<List<Disciplina>> getAPI = restTemplate.exchange(
+                    apiURL,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<Disciplina>>(){});
+
+            List<Disciplina> dados = getAPI.getBody();
 
             if (dados !=null && !dados.isEmpty()) {
                 repository.saveAll(dados);

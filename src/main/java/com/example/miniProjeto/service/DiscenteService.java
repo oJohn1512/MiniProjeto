@@ -2,40 +2,42 @@ package com.example.miniProjeto.service;
 
 import com.example.miniProjeto.Exception.ApiException;
 import com.example.miniProjeto.dto.DiscenteDTO;
+import com.example.miniProjeto.model.Biblioteca;
 import com.example.miniProjeto.model.Discente;
 import com.example.miniProjeto.repository.DiscenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
 @Service
 public class DiscenteService {
-    private final String apiURL = "https://rmi6vdpsq8.execute-api.us-east-2.amazonaws.com/msAluno";
-    private final WebClient webClient;
 
     @Autowired
     private DiscenteRepository repository;
 
-    public DiscenteService() {
-        this.webClient = WebClient.builder().baseUrl(apiURL).build();
-    }
 
     public void getDadosAndSave() {
+        final String apiURL = "https://rmi6vdpsq8.execute-api.us-east-2.amazonaws.com/msAluno";
         System.out.println("Iniciando sincronizacao de dados Discentes");
 
         try {
             repository.deleteAll();
+            RestTemplate restTemplate = new RestTemplate();
 
-            List<Discente> dados =  webClient
-                .get()
-                .uri("")
-                .retrieve()
-                .bodyToFlux(Discente.class)
-                .collectList()
-                .block();
+            ResponseEntity<List<Discente>> getAPI = restTemplate.exchange(
+                    apiURL,
+                    HttpMethod.GET,
+                    null,
+                    new ParameterizedTypeReference<List<Discente>>(){});
+
+            List<Discente> dados = getAPI.getBody();
 
             if (dados !=null && !dados.isEmpty()) {
                 repository.saveAll(dados);
