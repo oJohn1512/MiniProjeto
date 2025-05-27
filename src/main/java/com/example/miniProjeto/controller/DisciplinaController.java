@@ -22,6 +22,6 @@ public class DisciplinaController {
 
     @GetMapping("/{curso}")
     public ResponseEntity<List<DisciplinaDTO>> getDisciplinasByCurso(@PathVariable String curso) {
-        return ResponseEntity.ok(disciplinasService.GetDisciplinasByCurso(curso));
+        return ResponseEntity.ok(disciplinasService.getDisciplinasByCurso(curso));
     }
 }

@@ -3,11 +3,14 @@ package com.example.miniProjeto.Exception;
 import org.springframework.http.HttpStatus;
 
 public class ApiException extends RuntimeException {
-    String message;
-    HttpStatus status;
+    private final HttpStatus status;
 
     public ApiException(String message, HttpStatus status) {
-        this.message = message;
+        super(message);
         this.status = status;
+    }
+
+    public HttpStatus getStatus() {
+        return status;
     }
 }

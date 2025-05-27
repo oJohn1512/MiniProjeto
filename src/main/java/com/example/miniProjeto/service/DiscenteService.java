@@ -2,7 +2,6 @@ package com.example.miniProjeto.service;
 
 import com.example.miniProjeto.Exception.ApiException;
 import com.example.miniProjeto.dto.DiscenteDTO;
-import com.example.miniProjeto.model.Biblioteca;
 import com.example.miniProjeto.model.Discente;
 import com.example.miniProjeto.repository.DiscenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
@@ -57,6 +55,8 @@ public class DiscenteService {
 
         return new DiscenteDTO(discente.getId(), discente.getNome(), discente.getCurso(), discente.getModalidade(), discente.getStatus());
     }
+
+
 
 
 }

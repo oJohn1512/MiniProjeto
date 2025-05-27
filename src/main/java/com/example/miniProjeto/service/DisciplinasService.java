@@ -2,10 +2,8 @@ package com.example.miniProjeto.service;
 
 import com.example.miniProjeto.Exception.ApiException;
 import com.example.miniProjeto.dto.DisciplinaDTO;
-import com.example.miniProjeto.model.Discente;
 import com.example.miniProjeto.model.Disciplina;
 import com.example.miniProjeto.repository.DisciplinaRepository;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -13,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
@@ -53,7 +50,7 @@ public class DisciplinasService {
     }
 
 
-    public List<DisciplinaDTO> GetDisciplinasByCurso(String curso) {
+    public List<DisciplinaDTO> getDisciplinasByCurso(String curso) {
          List<Disciplina> listaDisciplinas = repository.findByCurso(curso);
 
          return listaDisciplinas.stream()
@@ -63,6 +60,14 @@ public class DisciplinasService {
                          disciplina.getVagas()))
                  .toList();
     }
+
+    public DisciplinaDTO getDisciplinasById(Long id) {
+        Disciplina disciplina = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Discente não encontrado"));
+
+        return new DisciplinaDTO(disciplina.getId(), disciplina.getCurso(), disciplina.getNome(), disciplina.getVagas());
+    }
+
 
 
 
