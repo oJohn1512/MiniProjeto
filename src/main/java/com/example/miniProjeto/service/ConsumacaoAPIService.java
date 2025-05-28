@@ -1,6 +1,6 @@
 package com.example.miniProjeto.service;
 
-import com.example.miniProjeto.Exception.ApiException;
+import com.example.miniProjeto.exception.ApiException;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

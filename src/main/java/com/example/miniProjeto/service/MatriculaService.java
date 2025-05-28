@@ -1,10 +1,12 @@
 package com.example.miniProjeto.service;
 
-import com.example.miniProjeto.Exception.ApiException;
+import com.example.miniProjeto.dto.SistemaBibliotecaDTO;
+import com.example.miniProjeto.exception.ApiException;
 import com.example.miniProjeto.dto.DiscenteDTO;
 import com.example.miniProjeto.dto.DisciplinaDTO;
 import com.example.miniProjeto.dto.MatriculaDTO;
 import com.example.miniProjeto.model.Matricula;
+import com.example.miniProjeto.model.SistemaBiblioteca;
 import com.example.miniProjeto.repository.MatriculaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -48,6 +50,8 @@ public class MatriculaService {
                 matricula.setDisciplina(disciplina.getNome());
 
                 repository.save(matricula);
+                disciplinasService.diminuirVaga(idDisciplina);
+
                 System.out.println("Matricula na disciplina feita!");
 
                 return new MatriculaDTO(matricula.getId(), matricula.getIdAluno(), matricula.getIdDisciplina(), matricula.getCurso(),
@@ -61,6 +65,39 @@ public class MatriculaService {
             System.out.println("2" + disciplina.getCurso());
             System.out.println("3" + aluno.getCurso().equals(disciplina.getCurso()));
             throw new ApiException("Disciplina não pertence ao curso do aluno", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    public List<MatriculaDTO> getDisciplinasMatriculadaAluno (Long idAluno) {
+        try {
+            List<Matricula> matricula = repository.findByIdDiscente(idAluno);
+
+            return matricula.stream()
+                    .map(discMatricula -> new MatriculaDTO(
+                            discMatricula.getId(),
+                            discMatricula.getIdAluno(),
+                            discMatricula.getIdDisciplina(),
+                            discMatricula.getCurso(),
+                            discMatricula.getDisciplina()
+                            ))
+                    .toList();
+
+        } catch (Exception e) {
+            throw new ApiException("Não foi possível listar disciplinas matriculadas pelo aluno", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    public String cancelarDisciplina(Long idRegistro) {
+        try {
+            Matricula registro = repository.findById(idRegistro)
+                    .orElseThrow(() -> new RuntimeException("Registro não encontrado"));
+
+            repository.deleteById(idRegistro);
+            disciplinasService.aumentarVaga(registro.getIdDisciplina());
+
+            return "Disciplina cancelada com sucesso!";
+        } catch (Exception e) {
+            throw new ApiException("Não foi possível se desmatricular da disciplina", HttpStatus.BAD_REQUEST);
         }
     }
 

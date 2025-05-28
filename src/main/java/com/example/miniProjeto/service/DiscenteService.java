@@ -1,6 +1,6 @@
 package com.example.miniProjeto.service;
 
-import com.example.miniProjeto.Exception.ApiException;
+import com.example.miniProjeto.exception.ApiException;
 import com.example.miniProjeto.dto.DiscenteDTO;
 import com.example.miniProjeto.model.Discente;
 import com.example.miniProjeto.repository.DiscenteRepository;

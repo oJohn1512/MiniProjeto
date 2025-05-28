@@ -1,6 +1,6 @@
 package com.example.miniProjeto.service;
 
-import com.example.miniProjeto.Exception.ApiException;
+import com.example.miniProjeto.exception.ApiException;
 import com.example.miniProjeto.dto.DisciplinaDTO;
 import com.example.miniProjeto.model.Disciplina;
 import com.example.miniProjeto.repository.DisciplinaRepository;
@@ -63,9 +63,29 @@ public class DisciplinasService {
 
     public DisciplinaDTO getDisciplinasById(Long id) {
         Disciplina disciplina = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Discente não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Disciplina não encontrado"));
 
         return new DisciplinaDTO(disciplina.getId(), disciplina.getCurso(), disciplina.getNome(), disciplina.getVagas());
+    }
+
+
+    public void diminuirVaga(Long id) {
+        Disciplina disciplina = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Disciplina não encontrado"));
+
+        disciplina.setVagas(disciplina.getVagas() -1 );
+
+        repository.save(disciplina);
+    }
+
+
+    public void aumentarVaga(Long id) {
+        Disciplina disciplina = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Disciplina não encontrado"));
+
+        disciplina.setVagas(disciplina.getVagas() + 1 );
+
+        repository.save(disciplina);
     }
 
 
