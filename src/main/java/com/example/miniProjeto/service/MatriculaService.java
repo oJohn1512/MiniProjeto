@@ -68,22 +68,21 @@ public class MatriculaService {
     }
 
     public List<MatriculaDTO> getDisciplinasMatriculadaAluno (Long idAluno) {
-        try {
             List<Matricula> matricula = repository.findByIdAluno(idAluno);
 
-            return matricula.stream()
-                    .map(discMatricula -> new MatriculaDTO(
-                            discMatricula.getId(),
-                            discMatricula.getIdAluno(),
-                            discMatricula.getIdDisciplina(),
-                            discMatricula.getCurso(),
-                            discMatricula.getDisciplina()
-                            ))
-                    .toList();
-
-        } catch (Exception e) {
-            throw new ApiException("Não foi possível listar disciplinas matriculadas pelo aluno", HttpStatus.BAD_REQUEST);
-        }
+            if (!matricula.isEmpty()) {
+                return matricula.stream()
+                        .map(discMatricula -> new MatriculaDTO(
+                                discMatricula.getId(),
+                                discMatricula.getIdAluno(),
+                                discMatricula.getIdDisciplina(),
+                                discMatricula.getCurso(),
+                                discMatricula.getDisciplina()
+                        ))
+                        .toList();
+            } else {
+                throw new ApiException("Aluno ainda não se matriculou em nenhuma disciplina", HttpStatus.BAD_REQUEST);
+            }
     }
 
     public String cancelarDisciplina(Long idRegistro) {

@@ -54,7 +54,6 @@ public class DisciplinasService {
          List<Disciplina> listaDisciplinas = repository.findByCurso(curso);
 
          if (!listaDisciplinas.isEmpty()) {
-             System.out.println("cai na lista");
              return listaDisciplinas.stream()
                      .map(disciplina -> new DisciplinaDTO(disciplina.getId(),
                              disciplina.getCurso(),

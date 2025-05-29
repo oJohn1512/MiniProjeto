@@ -51,22 +51,21 @@ public class SistemaBibiliotecaService {
     }
 
     public List<SistemaBibliotecaDTO> getLivrosAlugadoAluno (Long idAluno) {
-        try {
             List<SistemaBiblioteca> livros = repository.findByIdDiscente(idAluno);
 
-            return livros.stream()
-                    .map(sistemaB -> new SistemaBibliotecaDTO(
-                            sistemaB.getId(),
-                            sistemaB.getIdDiscente(),
-                            sistemaB.getIdLivro(),
-                            sistemaB.getNomeLivro(),
-                            sistemaB.getDataAlocado(),
-                            sistemaB.getDataDevolucao()))
-                    .toList();
-
-        } catch (Exception e) {
-            throw new ApiException("Não foi possível listar livros alugados pelo aluno", HttpStatus.BAD_REQUEST);
-        }
+            if (!livros.isEmpty()) {
+                return livros.stream()
+                        .map(sistemaB -> new SistemaBibliotecaDTO(
+                                sistemaB.getId(),
+                                sistemaB.getIdDiscente(),
+                                sistemaB.getIdLivro(),
+                                sistemaB.getNomeLivro(),
+                                sistemaB.getDataAlocado(),
+                                sistemaB.getDataDevolucao()))
+                        .toList();
+            } else {
+                throw new ApiException("Aluno não possui livros alugados", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
     }
 
     public String cancelarAluguel(Long idRegistro) {
