@@ -60,7 +60,6 @@ public class MatriculaService {
                 throw new ApiException("Não é possível fazer matricula, aluno já possui limite máximo de 5 disciplinas", HttpStatus.BAD_REQUEST);
             }
         } else {
-
             System.out.println("1" + aluno.getCurso());
             System.out.println("2" + disciplina.getCurso());
             System.out.println("3" + aluno.getCurso().equals(disciplina.getCurso()));
@@ -70,7 +69,7 @@ public class MatriculaService {
 
     public List<MatriculaDTO> getDisciplinasMatriculadaAluno (Long idAluno) {
         try {
-            List<Matricula> matricula = repository.findByIdDiscente(idAluno);
+            List<Matricula> matricula = repository.findByIdAluno(idAluno);
 
             return matricula.stream()
                     .map(discMatricula -> new MatriculaDTO(
@@ -90,7 +89,7 @@ public class MatriculaService {
     public String cancelarDisciplina(Long idRegistro) {
         try {
             Matricula registro = repository.findById(idRegistro)
-                    .orElseThrow(() -> new RuntimeException("Registro não encontrado"));
+                    .orElseThrow(() -> new ApiException("Registro não encontrado", HttpStatus.BAD_REQUEST));
 
             repository.deleteById(idRegistro);
             disciplinasService.aumentarVaga(registro.getIdDisciplina());
@@ -114,6 +113,7 @@ public class MatriculaService {
 
     private DisciplinaDTO getDisciplinaDisponivel(Long idDisciplina) {
         DisciplinaDTO disciplina = disciplinasService.getDisciplinasById(idDisciplina);
+
 
         if (disciplina.getVagas() >= 1) {
             return disciplina;

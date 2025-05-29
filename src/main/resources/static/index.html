@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interface Acadêmica</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="bg-light">
+<div class="container py-4">
+    <h2 class="mb-4 text-center">Sistema Acadêmico</h2>
+
+    <script>
+        function toggleSection(id, btn) {
+            const el = document.getElementById(id);
+            el.classList.toggle('d-none');
+            btn.innerHTML = el.classList.contains('d-none') ? '<i class="fas fa-plus"></i>' : '<i class="fas fa-minus"></i>';
+        }
+
+        function limparResultado(id) {
+            document.querySelector(`#${id} .resultado`).innerHTML = '';
+        }
+
+        function validarCampos(cardId, totalCampos) {
+            let preenchidos = 0;
+            for (let i = 0; i < totalCampos; i++) {
+                const valor = document.getElementById(`${cardId}Campo${i}`).value.trim();
+                if (valor !== '') preenchidos++;
+            }
+            const botao = document.getElementById(`${cardId}Btn`);
+            botao.disabled = preenchidos < totalCampos;
+        }
+
+        function tratarFetch(r, id) {
+            if (!r.ok) {
+                return r.text().then(err => {
+                    exibirResultado(id, { erro: err, status: r.status });
+                    throw new Error(err);
+                });
+            }
+            return r.json();
+        }
+    </script>
+
+    <div id="cards"></div>
+</div>
+
+<script>
+    const baseUrl = '';
+
+    const cards = [
+        { id: 'discente', titulo: 'Buscar Discente', campos: ['ID do Discente'], acao: buscarDiscente },
+        { id: 'disciplinas', titulo: 'Listar Disciplinas por Curso', campos: ['Nome do Curso'], acao: buscarDisciplinas },
+        { id: 'livros', titulo: 'Livros Disponíveis', campos: [], acao: buscarLivrosDisponiveis },
+        { id: 'matricula', titulo: 'Simular Matrícula', campos: ['ID do Aluno', 'ID da Disciplina'], acao: simularMatricula },
+        { id: 'disciplinasMatriculadas', titulo: 'Listar Disciplinas Matriculadas', campos: ['ID do Aluno'], acao: buscarDisciplinasMatriculadas },
+        { id: 'cancelarMatricula', titulo: 'Cancelar Matrícula', campos: ['ID da Matrícula'], acao: cancelarMatricula },
+        { id: 'reserva', titulo: 'Simular Reserva de Livro', campos: ['ID do Aluno', 'ID do Livro'], acao: simularReservaLivro },
+        { id: 'livrosAlugados', titulo: 'Listar Livros Alugados', campos: ['ID do Aluno'], acao: buscarLivrosAlugados },
+        { id: 'cancelarReserva', titulo: 'Cancelar Reserva de Livro', campos: ['ID da Reserva'], acao: cancelarReservaLivro },
+    ];
+
+    const container = document.getElementById('cards');
+
+    const acoesTexto = {
+        discente: 'Buscar',
+        disciplinas: 'Listar',
+        livros: 'Listar',
+        matricula: 'Matricular',
+        disciplinasMatriculadas: 'Listar',
+        cancelarMatricula: 'Cancelar',
+        reserva: 'Reservar',
+        livrosAlugados: 'Listar',
+        cancelarReserva: 'Cancelar'
+    };
+
+    cards.forEach(card => {
+        const cardDiv = document.createElement('div');
+        const btnId = `${card.id}Btn`;
+
+        const camposHTML = card.campos.map((c, i) =>
+            `<input type="text" class="form-control mb-2" placeholder="${c}" id="${card.id}Campo${i}" oninput="validarCampos('${card.id}', ${card.campos.length})">`
+        ).join('');
+
+        const botaoDesativado = card.campos.length > 0 ? 'disabled' : '';
+
+        cardDiv.className = 'card mb-3';
+        cardDiv.innerHTML = `
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <strong>${card.titulo}</strong>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary me-2" onclick="toggleSection('${card.id}Body', this)">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="limparResultado('${card.id}Body')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body" id="${card.id}Body">
+                ${camposHTML}
+                <button id="${btnId}" class="btn btn-success btn-sm" onclick="${card.acao.name}('${card.id}')" ${botaoDesativado}>
+                    ${acoesTexto[card.id] || 'Executar'}
+                </button>
+                <div class="resultado mt-3"></div>
+            </div>
+        `;
+        container.appendChild(cardDiv);
+    });
+
+    function exibirResultado(id, data) {
+        const res = document.querySelector(`#${id}Body .resultado`);
+        if (Array.isArray(data)) {
+            res.innerHTML = data.map(item =>
+                `<div class='border rounded p-2 mb-2'>${Object.entries(item).map(([k, v]) => `<strong>${k}:</strong> ${v}<br>`).join('')}</div>`
+            ).join('');
+        } else {
+            res.innerHTML = `<div class='border rounded p-2'>${Object.entries(data).map(([k, v]) => `<strong>${k}:</strong> ${v}<br>`).join('')}</div>`;
+        }
+    }
+
+    function buscarDiscente(id) {
+        fetch(`${baseUrl}/discente/${document.getElementById(id + 'Campo0').value}`)
+            .then(r => tratarFetch(r, id))
+            .then(d => exibirResultado(id, d))
+            .catch(e => console.error(e));
+    }
+
+    function buscarDisciplinas(id) {
+        fetch(`${baseUrl}/disciplina/${document.getElementById(id + 'Campo0').value}`)
+            .then(r => tratarFetch(r, id))
+            .then(d => exibirResultado(id, d))
+            .catch(e => console.error(e));
+    }
+
+    function buscarLivrosDisponiveis(id) {
+        fetch(`${baseUrl}/biblioteca`)
+            .then(r => tratarFetch(r, id))
+            .then(d => exibirResultado(id, d))
+            .catch(e => console.error(e));
+    }
+
+    function simularMatricula(id) {
+        const a = document.getElementById(id + 'Campo0').value;
+        const d = document.getElementById(id + 'Campo1').value;
+        fetch(`${baseUrl}/matricula/${a}/${d}`, { method: 'POST' })
+            .then(r => tratarFetch(r, id))
+            .then(d => exibirResultado(id, d))
+            .catch(e => console.error(e));
+    }
+
+    function buscarDisciplinasMatriculadas(id) {
+        fetch(`${baseUrl}/matricula/${document.getElementById(id + 'Campo0').value}`)
+            .then(r => tratarFetch(r, id))
+            .then(d => exibirResultado(id, d))
+            .catch(e => console.error(e));
+    }
+
+    function cancelarMatricula(id) {
+        fetch(`${baseUrl}/matricula/${document.getElementById(id + 'Campo0').value}`, { method: 'DELETE' })
+            .then(r => r.ok ? r.text() : r.text().then(err => { exibirResultado(id, { erro: err, status: r.status }); throw new Error(err); }))
+            .then(d => exibirResultado(id, { resultado: d }))
+            .catch(e => console.error(e));
+    }
+
+    function simularReservaLivro(id) {
+        const a = document.getElementById(id + 'Campo0').value;
+        const l = document.getElementById(id + 'Campo1').value;
+        fetch(`${baseUrl}/sistemaBiblioteca/${a}/${l}`, { method: 'POST' })
+            .then(r => tratarFetch(r, id))
+            .then(d => exibirResultado(id, d))
+            .catch(e => console.error(e));
+    }
+
+    function buscarLivrosAlugados(id) {
+        fetch(`${baseUrl}/sistemaBiblioteca/${document.getElementById(id + 'Campo0').value}`)
+            .then(r => tratarFetch(r, id))
+            .then(d => exibirResultado(id, d))
+            .catch(e => console.error(e));
+    }
+
+    function cancelarReservaLivro(id) {
+        fetch(`${baseUrl}/sistemaBiblioteca/${document.getElementById(id + 'Campo0').value}`, { method: 'DELETE' })
+            .then(r => r.ok ? r.text() : r.text().then(err => { exibirResultado(id, { erro: err, status: r.status }); throw new Error(err); }))
+            .then(d => exibirResultado(id, { resultado: d }))
+            .catch(e => console.error(e));
+    }
+</script>
+</body>
+
+</html>

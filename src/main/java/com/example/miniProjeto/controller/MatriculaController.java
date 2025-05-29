@@ -21,12 +21,12 @@ public class MatriculaController {
     }
 
     @GetMapping("/{idAluno}")
-    public ResponseEntity<List<MatriculaDTO>> getDisciplinasMatriculadaAluno(Long idAluno) {
+    public ResponseEntity<List<MatriculaDTO>> getDisciplinasMatriculadaAluno(@PathVariable  Long idAluno) {
         return ResponseEntity.ok(matriculaService.getDisciplinasMatriculadaAluno(idAluno));
     }
 
     @DeleteMapping("/{idRegistro}")
-    public ResponseEntity<String> cancelarDisciplina(Long idRegistro) {
+    public ResponseEntity<String> cancelarDisciplina(@PathVariable Long idRegistro) {
         return ResponseEntity.ok(matriculaService.cancelarDisciplina(idRegistro));
     }
 

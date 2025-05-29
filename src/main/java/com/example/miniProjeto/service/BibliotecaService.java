@@ -67,14 +67,14 @@ public class BibliotecaService {
 
     public BibliotecaDTO getLivroById(Long id) {
         Biblioteca livro = repository.findById(id)
-                .orElseThrow(() -> new ApiException("Discente não encontrado", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new ApiException("Livro não encontrado", HttpStatus.BAD_REQUEST));
 
         return new BibliotecaDTO(livro.getId(), livro.getTitulo(), livro.getAutor(), livro.getAno(), livro.getStatus());
     }
 
     public void alterarStatusLivroIndisp(Long idLivro) {
         Biblioteca livro = repository.findById(idLivro)
-                .orElseThrow(() -> new ApiException("Discente não encontrado", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new ApiException("Livro não encontrado", HttpStatus.BAD_REQUEST));
 
         livro.setStatus("Indisponível");
 
@@ -83,7 +83,7 @@ public class BibliotecaService {
 
     public void alterarStatusLivroDisp(Long idLivro) {
         Biblioteca livro = repository.findById(idLivro)
-                .orElseThrow(() -> new ApiException("Discente não encontrado", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new ApiException("Livro não encontrado", HttpStatus.BAD_REQUEST));
 
         livro.setStatus("Disponivel");
 

@@ -16,7 +16,7 @@ public class SistemaBibliotecaController {
     SistemaBibiliotecaService service;
 
     @GetMapping("/{idAluno}")
-    public ResponseEntity<List<SistemaBibliotecaDTO>> getLivrosAlugadoAluno(Long idAluno){
+    public ResponseEntity<List<SistemaBibliotecaDTO>> getLivrosAlugadoAluno(@PathVariable Long idAluno){
         return ResponseEntity.ok(service.getLivrosAlugadoAluno(idAluno));
     }
 

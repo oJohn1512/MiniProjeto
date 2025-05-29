@@ -43,7 +43,7 @@ public class SistemaBibiliotecaService {
             repository.save(livroAlugado);
             bibliotecaService.alterarStatusLivroIndisp(idLivro);
 
-            return new SistemaBibliotecaDTO(livroAlugado.getId(), livroAlugado.getIdLivro(), livroAlugado.getIdDiscente(),
+            return new SistemaBibliotecaDTO(livroAlugado.getId(),livroAlugado.getIdDiscente(), livroAlugado.getIdLivro() ,
                     livroAlugado.getNomeLivro(), livroAlugado.getDataAlocado(), livroAlugado.getDataDevolucao());
         } catch (Exception e) {
             throw new ApiException("Não foi possível alugar Livro, erro no sistema", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -76,15 +76,13 @@ public class SistemaBibiliotecaService {
 
             repository.deleteById(idRegistro);
 
-            bibliotecaService.alterarStatusLivroDisp(registro.getId());
+            bibliotecaService.alterarStatusLivroDisp(registro.getIdLivro());
 
             return "Cancelado aluguel do livro com registro: " + idRegistro ;
         } catch (Exception e) {
             throw new ApiException("Não foi possível cancelar aluguel do livro", HttpStatus.BAD_REQUEST);
         }
     }
-
-
 
     private DiscenteDTO getDiscenteAtivo(Long idAluno) {
         DiscenteDTO aluno = discenteService.getDiscente(idAluno);

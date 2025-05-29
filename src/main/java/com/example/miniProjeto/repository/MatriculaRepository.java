@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface MatriculaRepository extends JpaRepository<Matricula, Long> {
     Long countByIdAluno(Long idAluno);
-    List<Matricula> findByIdDiscente(Long idDiscente);
+    List<Matricula> findByIdAluno(Long idAluno);
 
 }

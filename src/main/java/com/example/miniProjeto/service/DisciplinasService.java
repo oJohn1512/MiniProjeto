@@ -53,17 +53,23 @@ public class DisciplinasService {
     public List<DisciplinaDTO> getDisciplinasByCurso(String curso) {
          List<Disciplina> listaDisciplinas = repository.findByCurso(curso);
 
-         return listaDisciplinas.stream()
-                 .map(disciplina -> new DisciplinaDTO(disciplina.getId(),
-                         disciplina.getCurso(),
-                         disciplina.getNome(),
-                         disciplina.getVagas()))
-                 .toList();
+         if (!listaDisciplinas.isEmpty()) {
+             System.out.println("cai na lista");
+             return listaDisciplinas.stream()
+                     .map(disciplina -> new DisciplinaDTO(disciplina.getId(),
+                             disciplina.getCurso(),
+                             disciplina.getNome(),
+                             disciplina.getVagas()))
+                     .toList();
+         } else {
+             throw new ApiException("Nenhuma disciplina disponivel", HttpStatus.BAD_REQUEST);
+         }
+
     }
 
     public DisciplinaDTO getDisciplinasById(Long id) {
         Disciplina disciplina = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Disciplina não encontrado"));
+                .orElseThrow(() -> new ApiException("Disciplina não encontrado", HttpStatus.BAD_REQUEST));
 
         return new DisciplinaDTO(disciplina.getId(), disciplina.getCurso(), disciplina.getNome(), disciplina.getVagas());
     }
@@ -71,7 +77,7 @@ public class DisciplinasService {
 
     public void diminuirVaga(Long id) {
         Disciplina disciplina = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Disciplina não encontrado"));
+                .orElseThrow(() -> new ApiException("Disciplina não encontrado", HttpStatus.BAD_REQUEST));
 
         disciplina.setVagas(disciplina.getVagas() -1 );
 
@@ -81,7 +87,7 @@ public class DisciplinasService {
 
     public void aumentarVaga(Long id) {
         Disciplina disciplina = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Disciplina não encontrado"));
+                .orElseThrow(() -> new ApiException("Disciplina não encontrado", HttpStatus.BAD_REQUEST));
 
         disciplina.setVagas(disciplina.getVagas() + 1 );
 

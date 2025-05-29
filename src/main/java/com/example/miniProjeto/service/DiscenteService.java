@@ -51,7 +51,7 @@ public class DiscenteService {
 
     public DiscenteDTO getDiscente(Long id) {
         Discente discente = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Discente não encontrado"));
+                .orElseThrow(() -> new ApiException("Discente não encontrado", HttpStatus.BAD_REQUEST));
 
         return new DiscenteDTO(discente.getId(), discente.getNome(), discente.getCurso(), discente.getModalidade(), discente.getStatus());
     }
